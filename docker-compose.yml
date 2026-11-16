@@ -1,0 +1,54 @@
+services:
+  db:
+    image: postgis/postgis:15-3.3
+    container_name: coastwatch_db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-coastwatch}
+      POSTGRES_USER: ${POSTGRES_USER:-coastwatch}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-coastwatch}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-coastwatch}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: coastwatch_backend
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-coastwatch}:${POSTGRES_PASSWORD:-coastwatch}@db:5432/${POSTGRES_DB:-coastwatch}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./Backend:/app
+      - ./data:/data
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    container_name: coastwatch_frontend
+    env_file: .env
+    environment:
+      VITE_API_URL: http://localhost:8000
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./Frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    command: npm run dev -- --host 0.0.0.0
+
+volumes:
+  pgdata:

@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "all-caps-body",
+        "value": "*",
+        "files": [
+          "Report/bao-cao-coastwatch.html"
+        ],
+        "createdAt": "2026-11-16T16:34:51.797Z",
+        "reason": "Cover page only: institution label (2 short lines) and h1 title — all-caps on report covers is a print convention, neither passage reaches 80 chars"
+      },
+      {
+        "rule": "overused-font",
+        "value": "arial",
+        "files": [
+          "Report/bao-cao-coastwatch.html"
+        ],
+        "createdAt": "2026-11-16T16:34:51.847Z",
+        "reason": "Arial used only inside SVG labels where safe web fonts are required for cross-platform rendering; Times New Roman is the body font"
+      }
+    ]
+  }
+}
